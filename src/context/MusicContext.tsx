@@ -1,0 +1,37 @@
+import TrackPlayer, { Capability, AppKilledPlaybackBehavior, RepeatMode } from 'react-native-track-player';
+
+export async function setupPlayer() {
+  try {
+    await TrackPlayer.setupPlayer();
+    await TrackPlayer.updateOptions({
+      capabilities: [
+        Capability.Play,
+        Capability.Pause,
+        Capability.SkipToNext,
+        Capability.SkipToPrevious,
+        Capability.SeekTo,
+      ],
+      compactCapabilities: [Capability.Play, Capability.Pause],
+      appKilledPlaybackBehavior: AppKilledPlaybackBehavior.StopPlaybackAndRemoveNotification,
+    });
+  } catch (error) {
+    console.error('Error setting up player:', error);
+  }
+}
+
+export async function addTracks() {
+  try {
+    await TrackPlayer.add([
+      {
+        id: '1',
+        url: require('../assets/audio/background.mp3'),
+        title: 'Background Music',
+        artist: 'Your Artist',
+        artwork: require('../assets/images/artwork.png'),
+      },
+    ]);
+    await TrackPlayer.setRepeatMode(RepeatMode.Queue);
+  } catch (error) {
+    console.error('Error adding tracks:', error);
+  }
+}

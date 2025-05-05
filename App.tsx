@@ -9,6 +9,8 @@ import PageOne from './src/screens/pageOne';
 import PageTwo from './src/screens/pageTwo';
 import PageThree from './src/screens/pageThree';
 
+import { setupPlayer, addTracks } from './src/context/MusicContext';
+
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
 
