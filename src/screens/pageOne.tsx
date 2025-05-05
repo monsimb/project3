@@ -1,27 +1,77 @@
 import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, Image, StyleSheet } from 'react-native';
-import Ionicons from 'react-native-vector-icons/FontAwesome6';
 
 const PageOne = ({ navigation }: any) => {
-  // States to track selections
+  // States to track button selections and images
   const [selectedPotion, setSelectedPotion] = useState(false);
   const [selectedStone, setSelectedStone] = useState(false);
   const [selectedWord, setSelectedWord] = useState(false);
+  
+  // Images for each selection (using GIFs)
+  const potionGif = require('../assets/white_heart.gif');  // Path to your GIF
+  const stoneGif = require('../assets/green_diamond.gif');    // Path to your GIF
+  const wordGif = require('../assets/red_moon.gif');      // Path to your GIF
+  
+  // An array to track the order of selected images
+  const [selectedImages, setSelectedImages] = useState<string[]>([]);
 
-  // Check if all three items are selected
-  const allSelected = selectedPotion && selectedStone && selectedWord;
+  // Function to handle button press and update the selected images
+  const handleSelection = (selection: string, setSelectionState: React.Dispatch<React.SetStateAction<boolean>>) => {
+    setSelectionState((prevState) => !prevState);
 
-  // Image for the combination result (you can replace this with any valid image)
-  const combinationImage = allSelected ? require('../assets/result-image1.png') : null;
+    // Add the corresponding image to the selectedImages array in order
+    if (!selectedImages.includes(selection)) {
+      setSelectedImages((prevImages) => [...prevImages, selection]);
+    } else {
+      // Remove the image if it was deselected
+      setSelectedImages((prevImages) => prevImages.filter(image => image !== selection));
+    }
+  };
+
+  // Show final result image based on selected order
+    const getResultImage = () => {
+        if (selectedImages.length !== 3) return null;
+    
+        const key = selectedImages.join('-'); // e.g., "potion-stone-word"
+    
+        const resultMap: Record<string, any> = {
+        'potion-stone-word': require('../assets/result1.png'),
+        'potion-word-stone': require('../assets/result2.png'),
+        'stone-potion-word': require('../assets/result3.png'),
+        'stone-word-potion': require('../assets/result4.png'),
+        'word-potion-stone': require('../assets/result5.png'),
+        'word-stone-potion': require('../assets/result6.png'),
+        };
+    
+        const resultImage = resultMap[key];
+        return resultImage ? (
+        <Image source={resultImage} style={styles.resultImage} resizeMode="contain" />
+        ) : null;
+    };
+  
+
+  // Render images based on the selected items
+  const renderSelectedImages = () => {
+    return selectedImages.map((image, index) => {
+      if (image === 'potion') return <Image key={index} source={potionGif} style={styles.selectionImage} />;
+      if (image === 'stone') return <Image key={index} source={stoneGif} style={styles.selectionImage} />;
+      if (image === 'word') return <Image key={index} source={wordGif} style={styles.selectionImage} />;
+      return null;
+    });
+  };
 
   return (
     <View style={styles.container}>
+        
       {/* Background Image (Stage) */}
       <Image
         source={require('../assets/stage.png')}
         style={styles.backgroundImage}
         resizeMode="contain"
       />
+    <View style={styles.resultImageContainer}>
+        {getResultImage()}
+    </View>
 
       {/* Overlapping Book Image */}
       <Image 
@@ -35,25 +85,23 @@ const PageOne = ({ navigation }: any) => {
         {/* Potion Button */}
         <TouchableOpacity
           style={[styles.button, { zIndex: 1 }]}
-          onPress={() => setSelectedPotion(!selectedPotion)}
+          onPress={() => handleSelection('potion', setSelectedPotion)}
         >
-          <Ionicons
-            name="flask"
-            size={30}
-            color={selectedPotion ? '#605795' : 'black'}
+          <Image
+            source={potionGif}
+            style={styles.buttonImage}
           />
-          <Text style={styles.buttonText}>Potion</Text>
+          <Text style={styles.buttonText}>Heart</Text>
         </TouchableOpacity>
 
         {/* Stone Button */}
         <TouchableOpacity
           style={[styles.button, { zIndex: 1 }]}
-          onPress={() => setSelectedStone(!selectedStone)}
+          onPress={() => handleSelection('stone', setSelectedStone)}
         >
-          <Ionicons
-            name="gem"
-            size={30}
-            color={selectedStone ? '#605795' : 'black'}
+          <Image
+            source={stoneGif}
+            style={styles.buttonImage}
           />
           <Text style={styles.buttonText}>Stone</Text>
         </TouchableOpacity>
@@ -61,25 +109,20 @@ const PageOne = ({ navigation }: any) => {
         {/* Word Button */}
         <TouchableOpacity
           style={[styles.button, { zIndex: 1 }]}
-          onPress={() => setSelectedWord(!selectedWord)}
+          onPress={() => handleSelection('word', setSelectedWord)}
         >
-          <Ionicons
-            name="book"
-            size={30}
-            color={selectedWord ? '#605795' : 'black'}
+          <Image
+            source={wordGif}
+            style={styles.buttonImage}
           />
-          <Text style={styles.buttonText}>Word</Text>
+          <Text style={styles.buttonText}>Moon</Text>
         </TouchableOpacity>
       </View>
 
-      {/* Show the resulting image when all items are selected */}
-      {combinationImage && (
-        <Image
-          source={combinationImage}
-          style={styles.combinationImage}
-          resizeMode="contain"
-        />
-      )}
+      {/* Render the selected images based on the order of selections */}
+      <View style={styles.selectedImagesContainer}>
+        {renderSelectedImages()}
+      </View>
     </View>
   );
 };
@@ -93,11 +136,10 @@ const styles = StyleSheet.create({
     backgroundColor: '#1e1e1f'
   },
   backgroundImage: {
-    flex:1,
+    flex: 1,
     position: 'absolute',
     width: "120%",
-    bottom:-60
-
+    bottom: -60
   },
   bookImage: {
     width: '100%',
@@ -115,7 +157,7 @@ const styles = StyleSheet.create({
     zIndex: 1, // Make sure buttons are on top of the book
   },
   button: {
-    backgroundColor: '#f8f3e7',
+    backgroundColor: '#d8cdb5',
     padding: 10,
     margin: 10,
     borderRadius: 5,
@@ -123,24 +165,37 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     width: 70,
     height: 70,
-    borderColor: '#ccc',
-    borderWidth: 1,
+    borderColor: '#d8cdb5',
+    borderWidth: 3,
+  },
+  buttonImage: {
+    width: 30,
+    height: 30,
+    marginBottom: 5, // Adjust if needed
   },
   buttonText: {
     color: '#605795',
     fontSize: 14,
     marginTop: 5,
   },
-  combinationImage: {
+  selectionImage: {
+    width: 60,
+    height: 60,
+    margin: 10,
+  },
+  selectedImagesContainer: {
+    flexDirection: 'row',
+    marginTop: 375,
+  },
+  resultImageContainer: {
+    position: 'absolute',
+    marginTop: 20,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  resultImage: {
     width: 200,
     height: 200,
-    marginTop: 20,
-  },
-  navigateButton: {
-    backgroundColor: '#605795',
-    padding: 15,
-    marginTop: 10,
-    borderRadius: 5,
   },
 });
 
