@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React, { useEffect } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
@@ -9,10 +9,12 @@ import PageOne from './src/screens/pageOne';
 import PageTwo from './src/screens/pageTwo';
 import PageThree from './src/screens/pageThree';
 
-import { setupPlayer, addTracks } from './src/context/MusicContext';
+import { setupPlayer, addTracks, playBackgroundMusic } from './src/context/MusicContext'; // Added playBackgroundMusic
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
+
+let playerInitialized = false;  // Flag to track player initialization
 
 // Bottom Tab Navigation Component
 function MainTabs() {
@@ -48,6 +50,23 @@ function MainTabs() {
 }
 
 const App = () => {
+  useEffect(() => {
+    // Initialize audio player and tracks, but only if it's not already initialized
+    const initializePlayer = async () => {
+      if (!playerInitialized) {
+        try {
+          await setupPlayer();  // Initialize player
+          await addTracks();    // Add tracks to player
+          await playBackgroundMusic();  // Try playing the background music
+          playerInitialized = true;  // Mark player as initialized
+        } catch (error) {
+          console.error('Error during player initialization:', error);
+        }
+      }
+    };
+    initializePlayer();
+  }, []);
+
   return (
     <NavigationContainer>
       <Stack.Navigator screenOptions={{ headerShown: false }}>
