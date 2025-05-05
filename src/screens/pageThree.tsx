@@ -1,3 +1,6 @@
+// guide
+
+
 import { View, Text } from "react-native";
 import { styles } from "../styles/UI";
 

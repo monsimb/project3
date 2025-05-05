@@ -1,29 +1,27 @@
-import React, { useEffect, useState } from "react";
-import { View, Text, Image, TouchableOpacity, ActivityIndicator, LogBox, Button } from "react-native";
-import { styles } from "../styles/UI";
+import React from 'react';
+import { View, Text, Image, TouchableOpacity } from 'react-native';
+import { styles } from '../styles/homescreen.js'; // Ensure this path is correct
 
 const HomeScreen = ({ navigation }: any) => {
   return (
     <View style={styles.container}>
-      <Image
-          style={styles.imageContainer}
-          source={require("../assets/head-face.png")}
-          resizeMode="contain"
+      <View style={styles.container}>
+        <Image 
+          source={require('../assets/head-face.png')}
+          resizeMode='contain'
         />
+      </View>
       <View style={styles.buttonContainer}>
-        <Button
-          title="Go to Page One"
-          onPress={() => navigation.navigate('PageOne')}
-        />
-        <Button
-          title="Go to Page Two"
-          onPress={() => navigation.navigate('PageTwo')}
-        />
-        <Button
-          title="Go to Page Three"
-          onPress={() => navigation.navigate('PageThree')}
-        />
-        </View>
+        {/* Button to navigate to the Bottom Tab Navigation */}
+        <TouchableOpacity
+          style={styles.button}
+          onPress={() => navigation.navigate('MainTabs')}
+        >
+          <Text style={styles.buttonText}>Start Summoning</Text>
+        </TouchableOpacity>
+      </View>
+
+
     </View>
   );
 };
