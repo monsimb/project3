@@ -1,7 +1,10 @@
 import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, Image, StyleSheet } from 'react-native';
+import { useSeenCombinations } from '../context/SeenCombinationsContext';
 
 const PageOne = ({ navigation }: any) => {
+  const { markAsSeen } = useSeenCombinations();
+
   // States to track button selections and images
   const [selectedPotion, setSelectedPotion] = useState(false);
   const [selectedStone, setSelectedStone] = useState(false);
@@ -29,25 +32,30 @@ const PageOne = ({ navigation }: any) => {
   };
 
   // Show final result image based on selected order
-    const getResultImage = () => {
-        if (selectedImages.length !== 3) return null;
-    
-        const key = selectedImages.join('-'); // e.g., "potion-stone-word"
-    
-        const resultMap: Record<string, any> = {
-        'potion-stone-word': require('../assets/result1.png'),
-        'potion-word-stone': require('../assets/result2.png'),
-        'stone-potion-word': require('../assets/result3.png'),
-        'stone-word-potion': require('../assets/result4.png'),
-        'word-potion-stone': require('../assets/result5.png'),
-        'word-stone-potion': require('../assets/result6.png'),
-        };
-    
-        const resultImage = resultMap[key];
-        return resultImage ? (
-        <Image source={resultImage} style={styles.resultImage} resizeMode="contain" />
-        ) : null;
+  const getResultImage = () => {
+    if (selectedImages.length !== 3) return null;
+
+    const key = selectedImages.join('-'); // e.g., "potion-stone-word"
+
+    const resultMap: Record<string, any> = {
+      'potion-stone-moon': require('../assets/result1.png'),
+      'potion-moon-stone': require('../assets/result2.png'),
+      'stone-potion-moon': require('../assets/result3.png'),
+      'stone-moon-potion': require('../assets/result4.png'),
+      'moon-potion-stone': require('../assets/result5.png'),
+      'moon-stone-potion': require('../assets/result6.png'),
     };
+
+    const resultImage = resultMap[key];
+    if (resultImage) {
+      markAsSeen(key); // Mark the combination as seen
+      console.log(key);
+    }
+
+    return resultImage ? (
+      <Image source={resultImage} style={styles.resultImage} resizeMode="contain" />
+    ) : null;
+  };
   
 
   // Render images based on the selected items
@@ -55,7 +63,7 @@ const PageOne = ({ navigation }: any) => {
     return selectedImages.map((image, index) => {
       if (image === 'potion') return <Image key={index} source={potionGif} style={styles.selectionImage} />;
       if (image === 'stone') return <Image key={index} source={stoneGif} style={styles.selectionImage} />;
-      if (image === 'word') return <Image key={index} source={wordGif} style={styles.selectionImage} />;
+      if (image === 'moon') return <Image key={index} source={wordGif} style={styles.selectionImage} />;
       return null;
     });
   };
@@ -106,10 +114,10 @@ const PageOne = ({ navigation }: any) => {
           <Text style={styles.buttonText}>Stone</Text>
         </TouchableOpacity>
 
-        {/* Word Button */}
+        {/* Moon Button */}
         <TouchableOpacity
           style={[styles.button, { zIndex: 1 }]}
-          onPress={() => handleSelection('word', setSelectedWord)}
+          onPress={() => handleSelection('moon', setSelectedWord)}
         >
           <Image
             source={wordGif}

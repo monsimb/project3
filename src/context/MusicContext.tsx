@@ -13,7 +13,7 @@ export async function setupPlayer() {
         Capability.SeekTo,
       ],
       compactCapabilities: [Capability.Play, Capability.Pause],
-      appKilledPlaybackBehavior: AppKilledPlaybackBehavior.StopPlaybackAndRemoveNotification,
+      // appKilledPlaybackBehavior: AppKilledPlaybackBehavior.StopPlaybackAndRemoveNotification,
     });
   } catch (error) {
     console.error('Error setting up player:', error);
@@ -57,3 +57,12 @@ export async function pauseBackgroundMusic() {
     console.error('Error pausing background music:', error);
   }
 }
+
+// Stop music
+export const stopMusic = async () => {
+  try {
+    await TrackPlayer.stop(); // Stop the music
+  } catch (error) {
+    console.error('Error stopping music:', error);
+  }
+};
